@@ -5,7 +5,7 @@
 
 /* Globale variable */
 int size;
-int capacity;
+int capacity = 40;
 int *weight,*profit,*selected;
 
 /*Funtion declaration*/
@@ -88,67 +88,24 @@ int bruteforce() {
 }
 int readFile(char * filename) {
 	FILE *fp;
-	char num[255];
-	int i=0,j=0;
-
+	int i=0;
 	fp = fopen(filename,"r");
 	if(fp == NULL) {
 		printf("\nERROR in opening the file!\n\n");
 		return 0;
 	}
-	char ch;
-	ch=fgetc(fp);
-	while(ch!='\n' && ch!=EOF) {
-		while(ch!='\n'){
-			num[j++]=ch;
-			ch=fgetc(fp);
+	while(!feof(fp)){
+		if(i==0){
+				fscanf(fp,"%d",&size);
+				//Create weight and profit array
+				weight = (int*) malloc(sizeof(int)*size);
+				profit = (int*) malloc(sizeof(int)*size);
+				selected = (int*) malloc(sizeof(int)*size);
+				i++;
+		}else{
+		fscanf(fp,"%d,%d",&weight[i-1],&profit[i-1]);
+		i++;
 		}
-		num[j]='\n';
-		size = atoi(num);
-		//Create weight and profit array
-		weight = (int*) malloc(sizeof(int)*size);
-		profit = (int*) malloc(sizeof(int)*size);
-		selected = (int*) malloc(sizeof(int)*size);
-
-		ch=fgetc(fp);
-		//Read the weights.
-		for(i=0;i<size;i++){
-			j=0;
-			while(ch!=',' && ch!='\n'){
-				num[j++]=ch;
-				ch=fgetc(fp);
-			}
-			num[j]='\n';
-			weight[i]=atoi(num);
-			if(ch=='\n')
-				break;
-			ch=fgetc(fp);
-		}
-
-		ch=fgetc(fp);
-		//Read the profit.
-		for(i=0;i<size;i++){
-			j=0;
-			while(ch!=',' && ch!='\n'){
-				num[j++]=ch;
-				ch=fgetc(fp);
-			}
-			num[j]='\n';
-			profit[i]=atoi(num);
-			if(ch=='\n')
-				break;
-			ch=fgetc(fp);
-		}
-		//Read profit
-
-		ch=fgetc(fp);
-		j=0;
-		while(ch!='\n' && ch!=EOF){
-			num[j++]=ch;
-			ch=fgetc(fp);
-		}
-		num[j]='\n';
-		capacity = atoi(num);
 	}
 	fclose(fp);
 	return 0;
