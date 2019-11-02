@@ -87,7 +87,7 @@ int bruteforce() {
 	}
 	return result;
 }
-int readFile(char * filename) {
+int readFile(char * filename,int size,int *weight,int *profit) {
 	FILE *fp;
 	int i=0;
 	fp = fopen(filename,"r");
