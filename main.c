@@ -2,14 +2,11 @@
 #include<stdlib.h>
 #include<string.h>
 #include<math.h>
-
-/* Globale variable */
-int size;
-int capacity = 40;
-int *weight,*profit,*selected;
+#include "mochila.c"
+#include "item.c"
 
 /*Funtion declaration*/
-int readFile(char*);
+int readFile(char*,int,int*,int*);
 int bruteforce();
 
 /*
@@ -18,15 +15,19 @@ int bruteforce();
 int main(int argc, char ** argv){
 	char *input;
 	int i,totalProfit=0,totalWeight=0;
+	int size;
+	int capacity = 40;
+	int *weight,*profit,*selected;
+	Mochila M;
 	if(argc!=2) {
 		printf("\nError: Invalid number of arguments!\n\n");
 		return 0;
 	}
 	input = argv[1];
-	readFile(input);
-
+	readFile(input,size,&weight,&profit);
+	initMochila(M,size);
+	selected = (int*) malloc(sizeof(int)*size);
 	totalProfit = bruteforce();
-
 	/*Prints the output*/
 	printf("\nSelected Items: {");
 	for(i=0;i<size;i++) {
@@ -97,10 +98,6 @@ int readFile(char * filename) {
 	while(!feof(fp)){
 		if(i==0){
 				fscanf(fp,"%d",&size);
-				//Create weight and profit array
-				weight = (int*) malloc(sizeof(int)*size);
-				profit = (int*) malloc(sizeof(int)*size);
-				selected = (int*) malloc(sizeof(int)*size);
 				i++;
 		}else{
 		fscanf(fp,"%d,%d",&weight[i-1],&profit[i-1]);

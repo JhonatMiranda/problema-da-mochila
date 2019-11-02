@@ -6,7 +6,7 @@ typedef struct Item{
   int profit;
 } Item;
 typedef struct {
-    PCelula inicio;
+    Int *inicio;
     Item *items;
 }Mochila;
 void initMochila(Mochila M);
