@@ -2,64 +2,66 @@
 #include<stdlib.h>
 #include<string.h>
 #include<math.h>
-#include "mochila.c"
-#include "item.c"
+#include "mochila.h"
 
-/*Funtion declaration*/
-int readFile(char*,int,int*,int*);
-int bruteforce();
+//declaração de funções
+int readFile(char*,int*,Mochila*);
+int bruteforce(Mochila*,int,int,int*);
 
-/*
-* @brief: Main function where the execution starts
-*/
+//função main
 int main(int argc, char ** argv){
+
+	//declaração de variáveis
 	char *input;
 	int i,totalProfit=0,totalWeight=0;
 	int size;
-	int capacity = 40;
-	int *weight,*profit,*selected;
+	int capacity=40;
+	int *selected;
 	Mochila M;
+
+	//verificar parâmetros da main
 	if(argc!=2) {
-		printf("\nError: Invalid number of arguments!\n\n");
+		printf("\nErro: Argumentos da função main inválidos!\n\n");
 		return 0;
 	}
 	input = argv[1];
-	readFile(input,size,&weight,&profit);
-	initMochila(M,size);
+	//chamada da função de ler arquivo
+	readFile(input,&size,&M);
+	//cria o vetor selected para definir os itens selecionados
 	selected = (int*) malloc(sizeof(int)*size);
-	totalProfit = bruteforce();
-	/*Prints the output*/
-	printf("\nSelected Items: {");
+	//chama a função bruteforce para selecionar os itens
+	totalProfit = bruteforce(&M,size,capacity,selected);
+	//printa as saidas
+	printf("\nItens Selecionados: {");
 	for(i=0;i<size;i++) {
 		if(selected[i]==1) {
-			totalWeight+=weight[i];
-			printf(" (Item%d, %d, %d),",i+1,weight[i],profit[i]);
+			totalWeight+=M.itens[i].weight;
+			printf(" (Item%d, %d, %d),",i+1,M.itens[i].weight,M.itens[i].profit);
 		}
 	}
 	printf(" }\n");
 
-	printf("Total Profit = %d\n",totalProfit);
-	printf("Total Weight = %d\n\n",totalWeight);
+	printf("Valor Total = %d\n",totalProfit);
+	printf("Peso Total = %d\n\n",totalWeight);
 
-	/*Free the allocated memory*/
+	//desaloca a memoria
+	free(M.itens);
 	free(selected);
-	free(weight);
-	free(profit);
 	return 0;
 }
 
-/*
-*@brief: Brute Force implementation of 0-1 Knapsack problem
-*/
-int bruteforce() {
+//função para calcular e escolher a melhor combinação
+int bruteforce(Mochila *M,int size,int capacity,int *selected) {
+	//declaração de variáveis
 	int i,j,isSelected=1,maxWt,maxProfit;
 	int iter=pow(2.0,size);
 	int result=0;
 	int temp[size];
-	/*Initialize the temp array */
-	for(i =0;i<size;i++)
+	//inicializa o vetor temporário
+	for(i =0;i<size;i++){
 		temp[i]=0;
-
+	}
+	//calcula todos os subcojuntos passanda um por um
 	for(i=0;i<iter;i++) {
 		isSelected=1;
 		maxProfit=0;
@@ -67,8 +69,8 @@ int bruteforce() {
 
 		for(j=0;j<size;j++){
 			if(temp[j]==1){
-				maxWt+=weight[j];
-				maxProfit+= profit[j];
+				maxWt+=M->itens[j].weight;
+				maxProfit+= M->itens[j].profit;
 			}
 		}
 		if( maxWt <= capacity && maxProfit>result){
@@ -87,23 +89,26 @@ int bruteforce() {
 	}
 	return result;
 }
-int readFile(char * filename,int size,int *weight,int *profit) {
+
+int readFile(char * filename,int *tamanho,Mochila *M) {
+	//declaração de variáveis
 	FILE *fp;
-	int i=0;
+	int i=0,weight=0,profit=0;
 	fp = fopen(filename,"r");
+	//verifica se o ponteiro tem conteudo
 	if(fp == NULL) {
 		printf("\nERROR in opening the file!\n\n");
 		return 0;
 	}
-	while(!feof(fp)){
-		if(i==0){
-				fscanf(fp,"%d",&size);
-				i++;
-		}else{
-		fscanf(fp,"%d,%d",&weight[i-1],&profit[i-1]);
-		i++;
-		}
+	//le a quantidade de itens e os valores
+	fscanf(fp,"%d",tamanho);
+	//inicializa a mochila
+	initMochila(M,*tamanho);
+	for(i=0;i<*tamanho;i++){
+			fscanf(fp,"%d,%d",&weight,&profit);
+			insertItem(M,weight,profit,i);
 	}
+	//fecha o arquivo
 	fclose(fp);
 	return 0;
 }
