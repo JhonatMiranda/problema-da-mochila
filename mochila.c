@@ -33,13 +33,13 @@ int bruteforce(Mochila *M,int size,int capacity,int *selected) {
 			}
 		}
 		if( maxWt <= capacity && maxProfit>result){
-			/*Copies the selected item in array. */
+			//copia os itens selecionados para o vetor selected
 			for(j=0;j<size;j++)
 				selected[j]=temp[j];
 			result=maxProfit;
 		}
 
-		/*Calculate the next subset */
+		//calcula o proximo subconjunto
 		for(j=0;j<size;j++){
 			temp[j]=temp[j]+isSelected;
 			isSelected = temp[j]/2;
